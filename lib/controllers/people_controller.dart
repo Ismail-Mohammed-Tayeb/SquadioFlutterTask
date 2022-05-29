@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:squadio_flutter_task/controllers/shared_prefs_handler.dart';
 import '../models/person.dart';
 import '../shared/endpoints.dart';
 import '../shared/http_handler.dart';
@@ -9,13 +11,15 @@ import '../views/homepage/homepage_state.dart';
 
 abstract class PeopleController {
   static int _currentPage = 1;
-  //https://api.themoviedb.org/3/person/popular?api_key=8f907a9fcbdd2843e00e8dafbb58fd60&language=en-US&page=9
-  // https://image.tmdb.org/t/p/w500/14uxt0jH28J9zn4vNQNTae3Bmr7.jpg
   static Future<void> getPeople() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      await SharedPrefsHandler.getPeople();
+      return;
+    }
     String url = ApiEndpoints.getPeopleEndPoint + _currentPage.toString();
     log("Called Get People On URL: $url");
     Response? response = await HttpHandler.getRequest(url);
-    _currentPage++;
     if (response == null) {
       return;
     }
@@ -23,5 +27,9 @@ abstract class PeopleController {
     for (var element in result['results']) {
       HomePageState.currentData.add(Person.fromJson(element));
     }
+    if (_currentPage == 1) {
+      SharedPrefsHandler.writePeople(jsonEncode(result['results']));
+    }
+    _currentPage++;
   }
 }

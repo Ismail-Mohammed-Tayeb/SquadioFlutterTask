@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:squadio_flutter_task/controllers/shared_prefs_handler.dart';
 import 'package:squadio_flutter_task/shared/color_palette.dart';
 import '../../controllers/people_controller.dart';
 import 'homepage_state.dart';
@@ -15,16 +19,58 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final controller = ScrollController();
+  late StreamSubscription<ConnectivityResult> subscription;
   @override
   void initState() {
     super.initState();
+    //Listning To Changes On Connection Status
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      log('Connection Status Changed');
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        //Then There is an internet connection
+        log('Connected');
+        HomePageState.isConnected.value = true;
+        HomePageState.currentData.clear();
+        PeopleController.getPeople();
+        return;
+      }
+      HomePageState.isConnected.value = false;
+
+      log('No Connection');
+      HomePageState.currentData.clear();
+      SharedPrefsHandler.getPeople();
+    });
     //Get Initial Data
-    PeopleController.getPeople();
+    Connectivity().checkConnectivity().then((result) {
+      if (result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi) {
+        //Then There is an internet connection
+        HomePageState.isConnected.value = true;
+
+        log('Connected');
+        HomePageState.currentData.clear();
+        PeopleController.getPeople();
+        return;
+      }
+      HomePageState.isConnected.value = false;
+
+      log('No Connection');
+      HomePageState.currentData.clear();
+      SharedPrefsHandler.getPeople();
+    });
     //ListView Listner To Later Populate and Append New Data
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         //Reached End Of The List, Next Paged Data Must Be Loaded
-        PeopleController.getPeople();
+        Connectivity().checkConnectivity().then((result) {
+          if (result == ConnectivityResult.mobile ||
+              result == ConnectivityResult.wifi) {
+            PeopleController.getPeople();
+          }
+        });
       }
     });
   }
@@ -32,6 +78,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     controller.dispose();
+    subscription.cancel();
     super.dispose();
   }
 
@@ -61,6 +108,9 @@ class _HomePageState extends State<HomePage> {
             itemCount: HomePageState.currentData.length + 1,
             itemBuilder: (context, index) {
               if (index == HomePageState.currentData.length) {
+                if (!HomePageState.isConnected.value) {
+                  return const SizedBox.shrink();
+                }
                 return const Center(
                     child: CircularProgressIndicator(color: kSecondaryColor));
               }

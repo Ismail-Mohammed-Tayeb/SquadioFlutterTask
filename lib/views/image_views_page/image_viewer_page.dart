@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:squadio_flutter_task/shared/color_palette.dart';
+import 'package:squadio_flutter_task/shared/http_handler.dart';
 
 class ImageViewerPage extends StatelessWidget {
   final String imageUrl;
@@ -22,7 +23,7 @@ class ImageViewerPage extends StatelessWidget {
                 tag: imageUrl,
                 child: Image.network(
                   imageUrl,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -55,7 +56,18 @@ class ImageViewerPage extends StatelessWidget {
                     height: 70.h,
                     child: FloatingActionButton(
                       heroTag: 'DownloadFAB',
-                      onPressed: () {},
+                      onPressed: () async {
+                        //TODO: Show Popup
+                        bool downloadResult =
+                            await HttpHandler.downloadRequest(imageUrl);
+                        if (downloadResult) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Downloaded Successfully'),
+                            ),
+                          );
+                        }
+                      },
                       backgroundColor: kSecondaryColor,
                       splashColor: kPrimaryColor,
                       tooltip: 'Download',

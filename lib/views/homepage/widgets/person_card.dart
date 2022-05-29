@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:squadio_flutter_task/shared/color_palette.dart';
 import 'package:squadio_flutter_task/shared/endpoints.dart';
 import 'package:squadio_flutter_task/shared/gender_enum.dart';
+import 'package:squadio_flutter_task/views/homepage/homepage_state.dart';
 import 'package:squadio_flutter_task/views/person_details_page/person_details_page.dart';
 
 import '../../../models/person.dart';
@@ -48,24 +50,30 @@ class PersonCard extends StatelessWidget {
                       stops: [0.1, 0.2, 0.7, 1],
                     ),
                   ),
-                  child: Image.network(
-                    ApiEndpoints.imageEndpoint + person.profilePath,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      double progressValue =
-                          loadingProgress.expectedTotalBytes != null
-                              ? (loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!)
-                              : 0;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          color: kSecondaryColor,
-                          value: progressValue,
-                        ),
-                      );
-                    },
-                    fit: BoxFit.cover,
-                  ),
+                  child: Obx(() {
+                    return HomePageState.isConnected.value
+                        ? CachedNetworkImage(
+                            imageUrl:
+                                ApiEndpoints.imageEndpoint + person.profilePath,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: kSecondaryColor,
+                                ),
+                              );
+                            },
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.error),
+                              Text('No Internet Connection')
+                            ],
+                          );
+                  }),
                 ),
               ),
               Positioned(

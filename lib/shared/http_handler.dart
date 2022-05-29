@@ -18,7 +18,7 @@ abstract class HttpHandler {
     }
   }
 
-  Future<bool> downloadRequest(String url) async {
+  static Future<bool> downloadRequest(String url) async {
     var response = await Dio()
         .get(url, options: Options(responseType: ResponseType.bytes));
     final result = await ImageGallerySaver.saveImage(
