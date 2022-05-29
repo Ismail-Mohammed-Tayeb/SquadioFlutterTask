@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 
 abstract class HttpHandler {
   static Future<Response?> getRequest(String url) async {
@@ -16,7 +18,13 @@ abstract class HttpHandler {
     }
   }
 
-  Future<dynamic> downloadRequest(String url) async {
-    return null;
+  Future<bool> downloadRequest(String url) async {
+    var response = await Dio()
+        .get(url, options: Options(responseType: ResponseType.bytes));
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(response.data),
+        quality: 100,
+        name: url.split('/').last);
+    return result['isSuccess'].toString() == 'true';
   }
 }
