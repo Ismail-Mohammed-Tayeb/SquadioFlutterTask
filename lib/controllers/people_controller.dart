@@ -2,14 +2,15 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:squadio_flutter_task/models/person.dart';
-import 'package:squadio_flutter_task/shared/endpoints.dart';
-import 'package:squadio_flutter_task/shared/http_handler.dart';
-import 'package:squadio_flutter_task/views/homepage/homepage_state.dart';
+import '../models/person.dart';
+import '../shared/endpoints.dart';
+import '../shared/http_handler.dart';
+import '../views/homepage/homepage_state.dart';
 
 abstract class PeopleController {
   static int _currentPage = 1;
   //https://api.themoviedb.org/3/person/popular?api_key=8f907a9fcbdd2843e00e8dafbb58fd60&language=en-US&page=9
+  // https://image.tmdb.org/t/p/w500/14uxt0jH28J9zn4vNQNTae3Bmr7.jpg
   static Future<void> getPeople() async {
     String url = ApiEndpoints.getPeopleEndPoint + _currentPage.toString();
     log("Called Get People On URL: $url");

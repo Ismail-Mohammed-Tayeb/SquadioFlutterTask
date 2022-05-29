@@ -1,4 +1,4 @@
-import 'package:squadio_flutter_task/shared/gender_enum.dart';
+import '../shared/gender_enum.dart';
 
 class Person {
   final bool isAdult;

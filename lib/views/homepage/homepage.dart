@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:squadio_flutter_task/controllers/people_controller.dart';
-import 'package:squadio_flutter_task/views/homepage/homepage_state.dart';
+import 'package:squadio_flutter_task/shared/color_palette.dart';
+import '../../controllers/people_controller.dart';
+import 'homepage_state.dart';
+import 'widgets/person_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -16,8 +19,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     //Get Initial Data
-    //ListView Listner To Later Update Data Among
     PeopleController.getPeople();
+    //ListView Listner To Later Populate and Append New Data
     controller.addListener(() {
       if (controller.position.maxScrollExtent == controller.offset) {
         //Reached End Of The List, Next Paged Data Must Be Loaded
@@ -27,13 +30,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kPrimaryColor,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         elevation: .0,
         title: const Text('Popular People'),
-        actions: [ElevatedButton(onPressed: () {}, child: const Text("+"))],
+        centerTitle: true,
       ),
       body: SizedBox.expand(
         child: Obx(() {
@@ -41,23 +51,20 @@ class _HomePageState extends State<HomePage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                CircularProgressIndicator(),
-                Text('Loading People Data'),
+                CircularProgressIndicator(color: kSecondaryColor),
               ],
             );
           }
           return ListView.builder(
+            physics: const BouncingScrollPhysics(),
             controller: controller,
             itemCount: HomePageState.currentData.length + 1,
             itemBuilder: (context, index) {
               if (index == HomePageState.currentData.length) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                    child: CircularProgressIndicator(color: kSecondaryColor));
               }
-              return ListTile(
-                title: Text(
-                  HomePageState.currentData[index].name,
-                ),
-              );
+              return PersonCard(person: HomePageState.currentData[index]);
             },
           );
         }),
