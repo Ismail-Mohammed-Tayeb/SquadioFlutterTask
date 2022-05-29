@@ -1,6 +1,5 @@
-import 'package:squadio_flutter_task/models/person.dart';
-
 import '../shared/gender_enum.dart';
+import 'person.dart';
 
 class PersonDetails extends Person {
   final String birthday;

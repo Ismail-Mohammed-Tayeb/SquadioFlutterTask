@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
-import 'package:squadio_flutter_task/models/person_details.dart';
-import 'package:squadio_flutter_task/shared/http_handler.dart';
+import '../models/person_details.dart';
+import '../shared/http_handler.dart';
 
 import '../shared/endpoints.dart';
 

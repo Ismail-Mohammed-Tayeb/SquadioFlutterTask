@@ -1,30 +1,26 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:squadio_flutter_task/main.dart';
+import 'package:squadio_flutter_task/controllers/people_controller.dart';
+import 'package:squadio_flutter_task/views/homepage/homepage.dart';
+import 'package:squadio_flutter_task/views/homepage/homepage_state.dart';
 
 void main() {
-  // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-  //   // Build our app and trigger a frame.
-  //   await tester.pumpWidget(const MyApp());
+  testWidgets('Test Growable List For Infinite Scrolling', (tester) async {
+    //initial Length Of Items Before Calling Test
+    int initialLength = HomePageState.currentData.length;
+    await PeopleController.getPeople();
+    await tester.pumpWidget(const HomePage());
 
-  //   // Verify that our counter starts at 0.
-  //   expect(find.text('0'), findsOneWidget);
-  //   expect(find.text('1'), findsNothing);
+    final list = find.byKey(const ValueKey('PeopleListView'));
+    //ID for finding the first element
+    final itemFinder = find.byKey(const ValueKey('LastElement'));
 
-  //   // Tap the '+' icon and trigger a frame.
-  //   await tester.tap(find.byIcon(Icons.add));
-  //   await tester.pump();
-
-  //   // Verify that our counter has incremented.
-  //   expect(find.text('0'), findsNothing);
-  //   expect(find.text('1'), findsOneWidget);
-  // });
+    await tester.scrollUntilVisible(
+      itemFinder,
+      500,
+      scrollable: list,
+    );
+    // Verify that the item contains the correct text.
+    expect(HomePageState.currentData.length, greaterThan(initialLength));
+  });
 }

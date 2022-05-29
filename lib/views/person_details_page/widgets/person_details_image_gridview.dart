@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:squadio_flutter_task/controllers/person_controller.dart';
-import 'package:squadio_flutter_task/models/person.dart';
-import 'package:squadio_flutter_task/shared/color_palette.dart';
-import 'package:squadio_flutter_task/views/image_views_page/image_viewer_page.dart';
+import '../../../controllers/person_controller.dart';
+import '../../../models/person.dart';
+import '../../../shared/color_palette.dart';
+import '../../image_views_page/image_viewer_page.dart';
 
 class PeronImagesGridView extends StatelessWidget {
   const PeronImagesGridView({

@@ -1,12 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:squadio_flutter_task/shared/color_palette.dart';
-import 'package:squadio_flutter_task/shared/endpoints.dart';
-import 'package:squadio_flutter_task/shared/gender_enum.dart';
-import 'package:squadio_flutter_task/views/homepage/homepage_state.dart';
-import 'package:squadio_flutter_task/views/person_details_page/person_details_page.dart';
+import '../../../shared/color_palette.dart';
+import '../../../shared/endpoints.dart';
+import '../../../shared/gender_enum.dart';
+import '../homepage_state.dart';
+import '../../person_details_page/person_details_page.dart';
 
 import '../../../models/person.dart';
 
@@ -26,7 +25,9 @@ class PersonCard extends StatelessWidget {
         highlightColor: kSecondaryColor,
         borderRadius: BorderRadius.circular(20),
         onTap: () {
-          Get.to(() => PersonDetailsPage(person: person));
+          if (HomePageState.isConnected.value) {
+            Get.to(() => PersonDetailsPage(person: person));
+          }
         },
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -52,19 +53,11 @@ class PersonCard extends StatelessWidget {
                   ),
                   child: Obx(() {
                     return HomePageState.isConnected.value
-                        ? CachedNetworkImage(
-                            imageUrl:
-                                ApiEndpoints.imageEndpoint + person.profilePath,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) {
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: kSecondaryColor,
-                                ),
-                              );
-                            },
-                            errorWidget: (context, url, error) =>
+                        ? Image.network(
+                            ApiEndpoints.imageEndpoint + person.profilePath,
+                            errorBuilder: (context, url, error) =>
                                 const Icon(Icons.error),
+                            fit: BoxFit.cover,
                           )
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,

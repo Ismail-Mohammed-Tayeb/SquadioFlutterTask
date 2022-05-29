@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:squadio_flutter_task/shared/color_palette.dart';
-import 'package:squadio_flutter_task/shared/http_handler.dart';
+import '../../shared/color_palette.dart';
+import '../../shared/http_handler.dart';
 
 class ImageViewerPage extends StatelessWidget {
   final String imageUrl;
@@ -10,9 +11,6 @@ class ImageViewerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonStyle = ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(kSecondaryColor),
-    );
     return Scaffold(
       backgroundColor: kPrimaryColor,
       body: SizedBox.expand(
@@ -21,9 +19,14 @@ class ImageViewerPage extends StatelessWidget {
             Expanded(
               child: Hero(
                 tag: imageUrl,
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
+                child: InteractiveViewer(
+                  panEnabled: false,
+                  minScale: 0.5,
+                  maxScale: 2,
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -56,18 +59,7 @@ class ImageViewerPage extends StatelessWidget {
                     height: 70.h,
                     child: FloatingActionButton(
                       heroTag: 'DownloadFAB',
-                      onPressed: () async {
-                        //TODO: Show Popup
-                        bool downloadResult =
-                            await HttpHandler.downloadRequest(imageUrl);
-                        if (downloadResult) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Downloaded Successfully'),
-                            ),
-                          );
-                        }
-                      },
+                      onPressed: downloadImage,
                       backgroundColor: kSecondaryColor,
                       splashColor: kPrimaryColor,
                       tooltip: 'Download',
@@ -76,7 +68,6 @@ class ImageViewerPage extends StatelessWidget {
                         size: 50.h,
                         color: kPrimaryColor,
                       ),
-                      // style: buttonStyle,
                     ),
                   ),
                 ],
@@ -85,6 +76,39 @@ class ImageViewerPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void downloadImage() async {
+    Fluttertoast.showToast(
+        msg: "Saving Image",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: kSecondaryColor,
+        textColor: kPrimaryColor,
+        fontSize: 16.0);
+    bool downloadResult = await HttpHandler.downloadRequest(imageUrl);
+    if (downloadResult) {
+      Fluttertoast.showToast(
+        msg: "Image Saved Successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: kSecondaryColor,
+        textColor: kPrimaryColor,
+        fontSize: 16.0,
+      );
+      return;
+    }
+    Fluttertoast.showToast(
+      msg: "Error Saving Image",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: kSecondaryColor,
+      textColor: kPrimaryColor,
+      fontSize: 16.0,
     );
   }
 }

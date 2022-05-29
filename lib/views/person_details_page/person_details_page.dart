@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:squadio_flutter_task/models/person.dart';
-import 'package:squadio_flutter_task/shared/color_palette.dart';
-import 'package:squadio_flutter_task/views/person_details_page/widgets/person_details_header.dart';
-import 'package:squadio_flutter_task/views/person_details_page/widgets/person_details_image_gridview.dart';
+import '../../models/person.dart';
+import '../../shared/color_palette.dart';
+import 'widgets/person_details_header.dart';
+import 'widgets/person_details_image_gridview.dart';
 
 class PersonDetailsPage extends StatelessWidget {
   final Person person;

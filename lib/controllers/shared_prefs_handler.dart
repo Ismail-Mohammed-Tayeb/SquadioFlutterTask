@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:squadio_flutter_task/models/person.dart';
-import 'package:squadio_flutter_task/views/homepage/homepage_state.dart';
+import '../models/person.dart';
+import '../views/homepage/homepage_state.dart';
 
 abstract class SharedPrefsHandler {
   static Future<List<Person>?> getPeople() async {
